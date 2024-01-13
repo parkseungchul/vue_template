@@ -44,3 +44,6 @@
 - Add router ```npm install vue-router```
 - https://getbootstrap.com/docs/4.0/examples/sign-in/
 
+### Pull Git 프로젝트 구성할 경우
+1. project structure 에서 다시 구성
+2. pakcage-lock.json 커밋 대상이 아니며 pull 이후 해당 디렉토리에서 npm install 환경 다시 구성
