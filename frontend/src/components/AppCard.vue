@@ -1,17 +1,9 @@
 <template>
-  <div class="card mb-4 box-shadow">
-    <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail"
-         alt="Card image cap">
-    <div class="card-body">
-      <p class="card-text">{{ item.id_dto }} {{ lib.toUpperCaseFirst(item.name_dto) }}</p>
-      <div class="d-flex justify-content-between align-items-center">
-        <div class="btn-group">
-          <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <span>
+    <h2>{{ item.id_dto }}</h2>
+    <p>{{ lib.toUpperCaseFirst(item.name_dto) }} </p>
+    <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+  </span>
 </template>
 <script>
 import lib from "@/scripts/lib";

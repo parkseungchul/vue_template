@@ -15,7 +15,9 @@
           <input type="checkbox" value="remember-me"> Remember me
         </label>
       </div>
-      <button class="btn btn-lg btn-primary btn-block" @click="submit()">Sign in</button>
+      <!--button class="btn btn-lg btn-primary btn-block" @click="submit()">Sign in</button-->
+      <button class="btn btn-lg btn-primary btn-block" type="button" @click="submit()">Sign in</button>
+
       <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
     </form>
   </div>
@@ -23,6 +25,8 @@
 <script>
 import {reactive} from "vue";
 import axios from "axios";
+import store from "@/scripts/store";
+import router from "@/scripts/router";
 
 export default {
   setup() {
@@ -32,14 +36,16 @@ export default {
         password: ""
       }
     })
-
     const submit = ()=>{
       axios.post("/api/member/login", state.form).then((res)=>{
-        console.log(res);
-        window.alert("success login");
+        store.commit("setAccount", res.data);
+        sessionStorage.setItem("id", res.data);
+        router.push({path:"/"});
+        window.alert("Login success");
+      }).catch(()=>{
+        window.alert("Login fail")
       })
     }
-
     return {state, submit}
   }
 

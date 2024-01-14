@@ -1,30 +1,30 @@
 <template>
-    <main role="main">
+  <main role="main">
 
-        <section class="jumbotron text-center">
-            <div class="container">
-                <h1 class="jumbotron-heading">Album example</h1>
-                <p class="lead text-muted">Something short and leading about the collection below—its contents, the
-                    creator, etc. Make it short and sweet, but not too short so folks don't simply skip over it
-                    entirely.</p>
-                <p>
-                    <a href="#" class="btn btn-primary my-2">Main call to action</a>
-                    <a href="#" class="btn btn-secondary my-2">Secondary action</a>
-                </p>
-            </div>
-        </section>
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <h1 class="display-3">Hello, world!</h1>
+        <p>This is a template for a simple marketing or informational website. It includes a large callout called a
+          jumbotron and three supporting pieces of content. Use it as a starting point to create something more
+          unique.</p>
+        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
+      </div>
+    </div>
 
-        <div class="album py-5 bg-light">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-4" v-for="(item, idx) in state.items" :key="idx">
-                        <AppCard :item="item"></AppCard>
-                    </div>
-
-                </div>
-            </div>
+    <div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-4" v-for="(item, idx) in state.items" :key="idx">
+          <AppCard :item="item"></AppCard>
         </div>
-    </main>
+      </div>
+
+      <hr>
+
+    </div> <!-- /container -->
+
+  </main>
 </template>
 <script>
 import axios from "axios";
@@ -32,20 +32,19 @@ import {reactive} from "vue";
 import AppCard from "@/components/AppCard.vue";
 
 export default {
-    name: 'AppHome', components: {
-        AppCard
-
-    },
-    setup() {
-        const state = reactive({
-            items: []
-        })
-        axios.get("/api/items").then((res) => {
-            console.log(res);
-            state.items = res.data;
-        })
-        return {state}
-    }
+  name: 'AppHome', components: {
+    AppCard
+  },
+  setup() {
+    const state = reactive({
+      items: []
+    })
+    axios.get("/api/items").then((res) => {
+      console.log(res);
+      state.items = res.data;
+    })
+    return {state}
+  }
 }
 </script>
 <style scoped>

@@ -47,7 +47,9 @@
 - Install vuex 
   - npm install vuex@next --save
 
-
+### reference url
+1. https://getbootstrap.com/docs/4.0/examples/jumbotron/#
+2. https://getbootstrap.com/docs/4.0/examples/sign-in/
 
 ### Pull Git 프로젝트 구성할 경우
 1. project structure 에서 다시 구성
