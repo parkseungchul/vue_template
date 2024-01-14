@@ -41,8 +41,13 @@
     },
   }
 ```
-- Add router ```npm install vue-router```
-- https://getbootstrap.com/docs/4.0/examples/sign-in/
+- Install router ```npm install vue-router```
+  - 로그인창 별도를 위한 테스트 https://getbootstrap.com/docs/4.0/examples/sign-in/
+
+- Install vuex 
+  - npm install vuex@next --save
+
+
 
 ### Pull Git 프로젝트 구성할 경우
 1. project structure 에서 다시 구성

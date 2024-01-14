@@ -1,5 +1,6 @@
 import {createApp} from 'vue'
 import App from './App.vue'
+import store from '@/scripts/store'
 import './assets/js/jquery-3.2.1.slim.min'
 import './assets/js/popper.min'
 import './assets/js/holder.min.js'
@@ -18,4 +19,4 @@ const  router= createRouter({
     routes
 })
 
-createApp(App).use(router).mount('#app')
+createApp(App).use(store).use(router).mount('#app')
