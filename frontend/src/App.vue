@@ -1,8 +1,8 @@
 <template>
 
-    <AppHeader></AppHeader>
-    <RouterView></RouterView>
-    <AppFooter></AppFooter>
+  <AppHeader></AppHeader>
+  <RouterView></RouterView>
+  <AppFooter></AppFooter>
 
 
 </template>
@@ -11,18 +11,29 @@
 import AppHeader from "@/components/AppHeader.vue";
 import AppFooter from "@/components/AppFooter.vue";
 import store from "@/scripts/store";
+import axios from "axios";
+import {useRoute} from "vue-router";
+import {watch} from "vue";
 
 export default {
   name: 'App',
   components: {
-      AppHeader,
-      AppFooter
+    AppHeader,
+    AppFooter
   },
-  setup(){
-    const id = sessionStorage.getItem("id");
-    if(id){
-      store.commit("setAccount", id);
-    }
+  setup() {
+    const check = () => {
+      axios.get("/api/member/check").then(({data}) => {
+        console.log(data);
+        if (data) {
+          store.commit("setAccount", data ||"");
+        }
+      })
+    };
+    const route = useRoute();
+    watch(route, () => {
+      check();
+    });
   }
 }
 </script>

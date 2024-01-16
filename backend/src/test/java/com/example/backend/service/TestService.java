@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.dto.Member;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,17 +14,16 @@ public class TestService {
     @Autowired
     MemberService memberService;
 
-
     @Test
-    public void getItemService(){
+    public void getItemService() {
         itemService.getItems().forEach(item -> {
             System.out.println(item.toString());
         });
     }
 
     @Test
-    public void login(){
-        int result = memberService.login("test@test.com", "123");
-        System.out.println(result);
+    public void login() {
+        Member member = memberService.login("test@test.com", "123");
+
     }
 }

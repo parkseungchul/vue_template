@@ -39,15 +39,18 @@
 <script>
 import router from "@/scripts/router";
 import store from "@/scripts/store";
+import axios from "axios";
 
 export default {
-  name: 'AppHeader',
+  name: 'Header',
   setup() {
-    const logout = ()=>{
-      store.commit("setAccount",0);
-      sessionStorage.removeItem("id");
-      router.push({path:"/"});
+    const logout = () => {
+      axios.post("/api/member/logout").then(()=>{
+        store.commit('setAccount', 0);
+        router.push({path: "/"});
+      });
     }
+
     return {logout}
   }
 }

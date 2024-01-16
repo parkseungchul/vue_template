@@ -1,12 +1,13 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.Item;
+import com.example.backend.dto.Member;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 public interface MemberService {
 
-    public int login(String email, String password) throws ResponseStatusException;
+    public Member login(String email, String password);
 
 }
