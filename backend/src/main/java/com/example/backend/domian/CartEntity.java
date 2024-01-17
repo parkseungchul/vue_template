@@ -9,13 +9,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="Tokens")
-public class TokenEntiry {
+@Table(name="Carts")
+public class CartEntity {
+
     @Id
-    @Column(length = 255, nullable = false)
-    private String token;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    @Column(length = 255, nullable = false)
-    private String refreshToken;
+    @Column
+    private int memberId;
 
+    @Column
+    private int itemId;
 }

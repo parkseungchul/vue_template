@@ -1,10 +1,13 @@
 package com.example.backend.domain;
 
 import com.example.backend.controller.ItemController;
+import com.example.backend.domian.CartRepository;
 import com.example.backend.domian.ItemRepository;
 import com.example.backend.domian.MemberEntity;
 import com.example.backend.domian.MemberRepository;
+import com.example.backend.dto.Cart;
 import com.example.backend.dto.Item;
+import com.example.backend.mapper.CartMapper;
 import com.example.backend.mapper.ItemMapper;
 import com.example.backend.mapper.MemberMapper;
 import org.junit.jupiter.api.Test;
@@ -15,16 +18,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class TestRepository {
 
     @Autowired
+    ItemMapper itemMapper;
+
+    @Autowired
     ItemRepository itemRepository;
 
     @Autowired
-    ItemMapper itemMapper;
+    MemberMapper memberMapper;
 
     @Autowired
     MemberRepository memberRepository;
 
     @Autowired
-    MemberMapper memberMapper;
+    CartMapper cartMapper;
+
+    @Autowired
+    CartRepository cartRepository;
 
     @Test
     public void itemCRUD(){
@@ -46,5 +55,15 @@ public class TestRepository {
 
             System.out.println(memberMapper.toDto(memberEntity).toString());
         }
+    }
+
+
+    @Test
+    public void cartCRUD(){
+        Cart cart = new Cart(1,1);
+        cartRepository.save(cartMapper.toEntity(cart));
+
+
+
     }
 }

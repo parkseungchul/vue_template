@@ -2,7 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.Member;
 import com.example.backend.dto.TokenStatus;
-import com.example.backend.service.JwService;
+import com.example.backend.service.JwtService;
 import com.example.backend.service.MemberService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,9 +17,9 @@ import java.util.Map;
 @Slf4j
 @RestController
 public class MemberController {
-    private JwService jwService;
+    private JwtService jwService;
     private MemberService memberService;
-    public MemberController(JwService jwService, MemberService memberService) {
+    public MemberController(JwtService jwService, MemberService memberService) {
         this.jwService = jwService;
         this.memberService = memberService;
     }
@@ -27,13 +27,13 @@ public class MemberController {
     public ResponseEntity login(@RequestBody Map<String, String> params, HttpServletResponse res) {
         Member member = memberService.login(params.get("email"), params.get("password"));
         if (member != null) {
-            String email = member.getEmail();
-            String token = jwService.generateToken("id", email);
+            int id = member.getId();
+            String token = jwService.generateToken("id", id);
             Cookie cookie = new Cookie("token", token);
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             res.addCookie(cookie);
-            return new ResponseEntity<>(email, HttpStatus.OK);
+            return new ResponseEntity<>(id, HttpStatus.OK);
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }

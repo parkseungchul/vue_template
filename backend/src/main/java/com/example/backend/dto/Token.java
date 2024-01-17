@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 public class Token {
 
     private String token;
-    private String refresh_token;
+    private String refreshToken;
 
 }

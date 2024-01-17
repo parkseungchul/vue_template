@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class JwtServiceImpl implements JwService {
+public class JwtServiceImpl implements JwtService {
 
     private TokenMapper tokenMapper;
     private TokenRepository tokenRepository;
@@ -28,7 +28,6 @@ public class JwtServiceImpl implements JwService {
         this.tokenMapper = tokenMapper;
         this.tokenRepository = tokenRepository;
     }
-
     private String secretKey = "asdfadsfsdfsdaf!@#$!#%#$YGREHERWGSDAFASAFADSHAHFGRRHGRGQRGEGR";
 
     @Override
@@ -110,6 +109,20 @@ public class JwtServiceImpl implements JwService {
         return token;
     }
 
+    @Override
+    public boolean isValid(String token) {
+        return this.getClaims(token) != null;
+    }
+
+    @Override
+    public int getId(String token) {
+        TokenStatus tokenStatus = this.getClaims(token);
+        if(tokenStatus != null){
+            return Integer.parseInt(tokenStatus.getClaims().get("id").toString());
+        }
+        return -1;
+    }
+
 
     @Override
     @Transactional
@@ -124,7 +137,7 @@ public class JwtServiceImpl implements JwService {
                 // 주 토큰 만료 시 리프레시 토큰 검증 및 새 토큰 발급
                 TokenEntiry tokenEntity = tokenRepository.findByToken(token);
                 if (tokenEntity != null) {
-                    String refresh_token = tokenEntity.getRefresh_token();
+                    String refresh_token = tokenEntity.getRefreshToken();
                     try {
                         // 키 가져와서 재생성
                         Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(refresh_token);
@@ -146,6 +159,7 @@ public class JwtServiceImpl implements JwService {
         }
         return null;
     }
+
     // 서명 키 생성 메소드
     private Key getSignKey() {
         byte[] secretByteKey = DatatypeConverter.parseBase64Binary(secretKey);
