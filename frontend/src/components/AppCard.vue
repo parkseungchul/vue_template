@@ -1,12 +1,29 @@
 <template>
-  <span>
-    <h2>{{ item.id_dto }}</h2>
-    <p>{{ lib.toUpperCaseFirst(item.name_dto) }} </p>
-    <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-  </span>
+
+
+
+  <h2>{{ lib.toUpperCaseFirst(item.name) }}</h2>
+  <div class="text-center">
+    <img :src="item.imgPath" style="max-width: 100%; height: auto;">
+  </div>
+  <div class="row">
+    <div class="col">
+      <s class="text-muted">{{ lib.getNumberFormatted(item.price) }}</s> {{item.discountPer}}% <strong>{{lib.getNumberFormatted(item.price - (item.discountPer/100*item.price))}}원</strong>
+    </div>
+  </div>
+  <p>
+    <router-link to="/cart" class="cart">
+      <i class="fa fa-shopping-cart" aria-hidden="true" @click="addToCart(item.id)"></i>
+    </router-link>
+  </p>
+
+
 </template>
 <script>
 import lib from "@/scripts/lib";
+import axios from "axios";
+import router from "@/scripts/router";
+import eventBus from "@/scripts/eventBus";
 
 export default {
   name: "AppCard",
@@ -14,11 +31,24 @@ export default {
     item: Object
   },
   setup() {
-    return {lib}
+    const addToCart = (itemId)=>{
+      axios.post(`/api/cart/items/${itemId}`).then(()=>{
+        eventBus.emit('item-added', itemId);
+        console.log('success');
+      }).catch(error => {
+        console.error('Error addCart:', error);
+        router.push('/login'); // 'error-page'를 에러 페이지의 경로로 바꾸세요
+      });
+    };
+    return {lib, addToCart}
   }
 }
 
 </script>
 <style scoped>
+.img {
+  width: 100%;
+  height: 250px;
+}
 
 </style>

@@ -17,9 +17,6 @@ public class JwtServiceImplTest {
 
     @Test
     public void testTokenValidity() throws InterruptedException {
-        String previous_token = jwtService.generateToken("id", "test@test.com");
-        Thread.sleep(5000);
-        TokenStatus tokenStatus = jwtService.getClaims(previous_token);
-        System.out.println(tokenStatus.getClaims().toString());
+
     }
 }

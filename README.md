@@ -50,7 +50,21 @@
 ### reference url
 1. https://getbootstrap.com/docs/4.0/examples/jumbotron/#
 2. https://getbootstrap.com/docs/4.0/examples/sign-in/
-
+3. https://fontawesome.com/v4/
 ### Pull Git 프로젝트 구성할 경우
 1. project structure 에서 다시 구성
 2. pakcage-lock.json 커밋 대상이 아니며 pull 이후 해당 디렉토리에서 npm install 환경 다시 구성
+
+#  서버 공통 소스로 뽑을것 
+
+docker run -d --name mysqlDB `
+-e MYSQL_DATABASE=vue_test `
+-e MYSQL_USER=user01 `
+-e MYSQL_PASSWORD=user01 `
+-e MYSQL_ROOT_PASSWORD=password `
+-e TZ='+08:00' `
+-p 3306:3306 `
+-v D:\docker\mysql:/var/lib/mysql `
+mysql
+
+jdbc:mysql://localhost:3306/vue_test?serverTimezone=Asia/Kuala_Lumpur

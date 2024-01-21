@@ -9,8 +9,10 @@ public interface CartService {
 
     Cart getCart(int memberId, int itemId);
 
+    void delCart(int memberId, int itemId);
+
     void saveCart(Cart cart);
 
-    List<Cart> listCart(int memberId);
+    List<Item> listItem(int menberId);
 
 }

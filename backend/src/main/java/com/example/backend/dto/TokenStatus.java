@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TokenStatus {
+    private int tokenId;
+    private int memberId;
     private boolean isRefresh = false;
     private String token;
     private Claims claims;

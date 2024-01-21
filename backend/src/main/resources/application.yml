@@ -1,12 +1,17 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/vue_test
+    url: jdbc:mysql://localhost:3306/vue_test?serverTimezone=Asia/Kuala_Lumpur
     username: user01
     password: user01
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+custom:
+  token:
+    life-cycle: PT1H #  PT1D=1day PT1H=1hour PT1M=1Minute PT1S=1second
+    refresh-life-cycle: PT2H
+
 logging:
   level:
     root: error

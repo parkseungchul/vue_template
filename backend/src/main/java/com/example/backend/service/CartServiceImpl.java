@@ -2,8 +2,12 @@ package com.example.backend.service;
 
 import com.example.backend.domian.CartEntity;
 import com.example.backend.domian.CartRepository;
+import com.example.backend.domian.ItemRepository;
 import com.example.backend.dto.Cart;
+import com.example.backend.dto.Item;
 import com.example.backend.mapper.CartMapper;
+import com.example.backend.mapper.ItemMapper;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,10 +17,14 @@ import java.util.stream.Collectors;
 @Service
 public class CartServiceImpl implements CartService{
 
-
     final CartMapper cartMapper;
     final CartRepository cartRepository;
-    public CartServiceImpl(CartMapper cartMapper, CartRepository cartRepository){
+    final ItemMapper itemMapper;
+    final ItemRepository itemRepository;
+
+    public CartServiceImpl(CartMapper cartMapper, CartRepository cartRepository, ItemMapper itemMapper, ItemRepository itemRepository){
+        this.itemMapper = itemMapper;
+        this.itemRepository = itemRepository;
         this.cartMapper = cartMapper;
         this.cartRepository = cartRepository;
     }
@@ -31,23 +39,27 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
+    @Transactional
+    public void delCart(int memberId, int itemId) {
+        cartRepository.deleteByMemberIdAndItemId(memberId, itemId);
+    }
+
+    @Override
     public void saveCart(Cart cart) {
 
         cartRepository.save(cartMapper.toEntity(cart));
     }
 
     @Override
-    public List<Cart> listCart(int memberId) {
+    public List<Item> listItem(int memberId) {
         List<CartEntity> cartEntityList = cartRepository.findByMemberId(memberId);
-        /**
-        List cartList = new ArrayList<Cart>();
-        for(CartEntity cartEntity: cartEntityList){
-            cartList.add(cartMapper.toDto(cartEntity));
-        }
-        return cartList;
-        **/
-        return cartEntityList.stream()
-                .map(cartMapper::toDto)
-                .collect(Collectors.toList());
+        List<Integer> itemIdList = cartEntityList.stream().map(CartEntity::getItemId).collect(Collectors.toList());
+
+        List<Item> itemList = new ArrayList<Item>();
+        itemRepository.findByIdIn(itemIdList).forEach(itemEntity -> {
+            itemList.add(itemMapper.toDto(itemEntity));
+        });
+
+        return itemList;
     }
 }

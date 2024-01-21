@@ -9,7 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Token {
+    public Token(String token, String refreshToken){
+        this.token = token;
+        this.refreshToken = refreshToken;
+    }
 
+    private int tokenId;
     private String token;
     private String refreshToken;
 

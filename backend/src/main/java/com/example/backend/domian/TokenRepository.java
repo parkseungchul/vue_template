@@ -1,10 +1,12 @@
 package com.example.backend.domian;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.repository.CrudRepository;
 
-public interface TokenRepository extends CrudRepository<TokenEntiry,String> {
+public interface TokenRepository extends CrudRepository<TokenEntity,String> {
 
-    TokenEntiry findByToken(String token);
+    TokenEntity findByTokenIdAndToken(int tokenId, String token);
 
-    void deleteByToken(String token);
+    @Transactional
+    void deleteByTokenIdAndToken(Integer tokenId, String token);
 }
