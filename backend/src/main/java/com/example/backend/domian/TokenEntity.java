@@ -30,12 +30,15 @@ public class TokenEntity {
     @Column(name = "updateTime")
     private LocalDateTime updateTime;
 
+    // @PrePersist is executed before the insert operation.
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
         createTime = now;
         updateTime = now;
     }
+
+    // @PreUpdate is executed before the Update operation.
     @PreUpdate
     protected void onUpdate() {
         updateTime = LocalDateTime.now();

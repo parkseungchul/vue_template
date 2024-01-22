@@ -29,6 +29,12 @@ public class CartServiceImpl implements CartService{
         this.cartRepository = cartRepository;
     }
 
+    /**
+     * It checks for the existence of the item in the cart by its Member-ID and Item-ID.
+     * @param memberId
+     * @param itemId
+     * @return
+     */
     @Override
     public Cart getCart(int memberId, int itemId) {
         CartEntity cartEntity = cartRepository.findByMemberIdAndItemId(memberId, itemId);
@@ -38,18 +44,31 @@ public class CartServiceImpl implements CartService{
         return null;
     }
 
+    /**
+     * It deletes the item in the cart by its Member-ID and Item-ID
+     * @param memberId
+     * @param itemId
+     */
     @Override
     @Transactional
     public void delCart(int memberId, int itemId) {
         cartRepository.deleteByMemberIdAndItemId(memberId, itemId);
     }
 
+    /**
+     * It saves the cart information, including the Member-ID.
+     * @param cart
+     */
     @Override
     public void saveCart(Cart cart) {
-
         cartRepository.save(cartMapper.toEntity(cart));
     }
 
+    /**
+     * It retrieves items in the cart by its Member-ID
+     * @param memberId
+     * @return
+     */
     @Override
     public List<Item> listItem(int memberId) {
         List<CartEntity> cartEntityList = cartRepository.findByMemberId(memberId);

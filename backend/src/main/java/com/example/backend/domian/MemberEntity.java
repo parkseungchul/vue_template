@@ -1,6 +1,5 @@
 package com.example.backend.domian;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

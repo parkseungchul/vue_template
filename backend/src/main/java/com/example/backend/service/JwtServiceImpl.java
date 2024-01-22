@@ -25,7 +25,6 @@ import java.util.Map;
 @Service
 public class JwtServiceImpl implements JwtService {
 
-
     private Duration lifeCycle;
     private Duration refreshLifeCycle;
 

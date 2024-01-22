@@ -72,7 +72,7 @@ public class MemberController {
 
     /**
      * check available token.
-     * if can be available token or not.
+     * if can be an available token or not.
      * if it is available token, it should return the ID of member.
      *
      * @param req
