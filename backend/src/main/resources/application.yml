@@ -16,3 +16,6 @@ logging:
   level:
     root: error
     com.example.backend: debug
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} |%M| [%thread] %-5level %logger{36} - %msg%n"   # performance issue
+#   console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

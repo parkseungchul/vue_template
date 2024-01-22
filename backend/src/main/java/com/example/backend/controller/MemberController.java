@@ -27,10 +27,17 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    /**
+     * login action
+     *
+     * @param params
+     * @param res
+     * @return
+     */
     @PostMapping("/api/member/login")
     public ResponseEntity login(@RequestBody Map<String, String> params, HttpServletResponse res) {
         Member member = memberService.login(params.get("email"), params.get("password"));
-        log.debug("login !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        log.debug("login");
         if (member != null) {
             int id = member.getId();
             TokenStatus tokenStatus = jwService.generateToken(null, "id", id);
@@ -41,12 +48,20 @@ public class MemberController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * logout action
+     *
+     * @param tokenId
+     * @param token
+     * @param res
+     * @return
+     */
     @PostMapping("/api/member/logout")
     public ResponseEntity logout(
             @CookieValue(value = "tokenId", required = false) Integer tokenId,
             @CookieValue(value = "token", required = false) String token,
             HttpServletResponse res) {
-        log.debug("logout !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        log.debug("logout");
         if (token != null && tokenId != null) {
             jwService.deleteToken(tokenId, token);
         }
@@ -55,23 +70,27 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * check available token.
+     * if can be available token or not.
+     * if it is available token, it should return the ID of member.
+     *
+     * @param req
+     * @param res
+     * @return
+     */
     @GetMapping("/api/member/check")
     @AuthenticatedEndpoint(throwOnUnauthorized = false)
     public ResponseEntity check(
-            @CookieValue(value = "tokenId", required = false) Integer tokenId,
-            @CookieValue(value = "token", required = false) String token,
             HttpServletRequest req,
             HttpServletResponse res) {
-        log.debug("check1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        TokenStatus tokenStatus = (TokenStatus)req.getAttribute("tokenStatus");
-        log.debug("check2 " + tokenStatus + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        if(tokenStatus == null){
+        log.debug("check");
+        TokenStatus tokenStatus = (TokenStatus) req.getAttribute("tokenStatus");
+        if (tokenStatus == null) {
             return new ResponseEntity<>(null, HttpStatus.OK);
-        }else{
+        } else {
             int memberId = tokenStatus.getMemberId();
             return new ResponseEntity<>(memberId, HttpStatus.OK);
         }
-
-
     }
 }

@@ -27,10 +27,17 @@ public class ItemController {
         this.itemService = itemService;
     }
 
+    /**
+     * It shows registered item list.
+     * Users who haven't logged in have the authority to see the item list. (throwOnUnauthorized = false)
+     * @param req
+     * @param res
+     * @return
+     */
     @GetMapping("/api/items")
     @AuthenticatedEndpoint(throwOnUnauthorized = false)
     public List<Item> getItems(HttpServletRequest req, HttpServletResponse res) {
-        log.debug("getItems !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        log.debug("getItems");
         return itemService.getItems();
     }
 }
