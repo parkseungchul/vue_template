@@ -25,12 +25,13 @@ import java.util.Map;
 @Service
 public class JwtServiceImpl implements JwtService {
 
+    // token available time
     private Duration lifeCycle;
+    // refresh token available time
     private Duration refreshLifeCycle;
-
+    // DTO to Entity or Entity to DTO
     private TokenMapper tokenMapper;
     private TokenRepository tokenRepository;
-
 
     public JwtServiceImpl(
             @Value("${custom.token.life-cycle}") String lifeCycle,
@@ -43,54 +44,31 @@ public class JwtServiceImpl implements JwtService {
         this.tokenRepository = tokenRepository;
     }
 
+    // it is for encryption, so it is never exposed anywhere
     private String secretKey = "asdfadsfsdfsdaf!@#$!#%#$YGREHERWGSDAFASAFADSHAHFGRRHGRGQRGEGR";
 
+    /**
+     * It deletes a token
+     *
+     * @param tokenId
+     * @param token
+     */
     @Override
     public void deleteToken(Integer tokenId, String token) {
         tokenRepository.deleteByTokenIdAndToken(tokenId, token);
     }
 
-
-    // 리프레시 토큰 생성 메소드
-    @Deprecated
-    private String generateRefreshToken(int tokenId, String token) {
-        TokenStatus tokenStatus = getClaims(tokenId, token);
-        if (tokenStatus != null) {
-            Object value = tokenStatus.getClaims().get("id");
-            // 리프레시 토큰은 더 긴 유효 기간을 가짐 (1초 *60(1분) * 60(1시간) *24(하루) * 180(180일)
-            return generateToken("id", value, (1000 * 60 * 60) * 24 * 180);
-        }
-        return null;
-    }
-
-
-    @Deprecated
-    public String generateToken(String key, Object value, long expirationTime) {
-        Date expTime = new Date(System.currentTimeMillis() + expirationTime);
-        byte[] secretByteKey = DatatypeConverter.parseBase64Binary(secretKey);
-        Key signKey = new SecretKeySpec(secretByteKey, SignatureAlgorithm.HS256.getJcaName());
-
-        Map<String, Object> header = new HashMap<>();
-        header.put("type", "JWT");
-        header.put("algorithm", "HS256");
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(key, value);
-
-        return Jwts.builder()
-                .setHeader(header)
-                .setClaims(claims)
-                .setExpiration(expTime)
-                .signWith(signKey, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-
+    /**
+     * @param orgTokenEntity : If if is null, it should be an Insert Token, otherwise It should be an Update Token
+     * @param key
+     * @param value
+     * @return
+     */
     @Override
     public TokenStatus generateToken(TokenEntity orgTokenEntity, String key, Object value) {
         Key signKey = getSignKey();
 
-        // 토큰 생성을 위한 공통 설정
+        // create token for sharing setting
         Map<String, Object> header = new HashMap<>();
         header.put("type", "JWT");
         header.put("algorithm", "HS256");
@@ -102,8 +80,7 @@ public class JwtServiceImpl implements JwtService {
         Instant expiryDate = now.plus(lifeCycle);
         Instant refreshExpiryDate = now.plus(refreshLifeCycle);
 
-
-        // 주 토큰 생성 (유효 기간 1분)
+        // create main token
         String token = Jwts.builder()
                 .setHeader(header)
                 .setClaims(claims)
@@ -111,7 +88,7 @@ public class JwtServiceImpl implements JwtService {
                 .signWith(signKey, SignatureAlgorithm.HS256)
                 .compact();
 
-        // 리프레시 토큰 생성 (유효 기간 5분)
+        // create refresh token
         String refreshToken = Jwts.builder()
                 .setHeader(header)
                 .setClaims(claims)
@@ -122,31 +99,41 @@ public class JwtServiceImpl implements JwtService {
         Token tokenDto = new Token(token, refreshToken);
         TokenEntity tokenEntity = tokenMapper.toEntity(tokenDto);
 
-
         // return value
         TokenStatus tokenStatus = new TokenStatus();
 
         // update token
         if (orgTokenEntity != null) {
             tokenEntity.setTokenId(orgTokenEntity.getTokenId());
-            tokenStatus.setRefresh(true);
-        }else{  // newbie token
-            tokenStatus.setRefresh(false);
+            tokenStatus.setUpdate(true);
+        } else {  // newbie token
+            tokenStatus.setCreate(true);
         }
-
         tokenEntity = tokenRepository.save(tokenEntity);
         tokenStatus.setTokenId(tokenEntity.getTokenId());
-        tokenStatus.setMemberId((Integer)value);
+        tokenStatus.setMemberId((Integer) value);
         tokenStatus.setToken(token);
 
         return tokenStatus;
     }
 
+    /**
+     * It is checked, whether the token is available or not
+     * @param tokenId
+     * @param token
+     * @return
+     */
     @Override
     public boolean isValid(int tokenId, String token) {
         return this.getClaims(tokenId, token) != null;
     }
 
+    /**
+     * It retrieves the Member-ID from the token.
+     * @param tokenId
+     * @param token
+     * @return
+     */
     @Override
     public int getMemberId(int tokenId, String token) {
         TokenStatus tokenStatus = this.getClaims(tokenId, token);
@@ -156,10 +143,15 @@ public class JwtServiceImpl implements JwtService {
         return -1;
     }
 
+    /**
+     * If it is a new or a refresh token, it should update the cookies.
+     * @param tokenStatus
+     * @param res
+     */
     @Override
     public void setCookies(TokenStatus tokenStatus, HttpServletResponse res) {
-        log.debug("setCookies !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + tokenStatus.toString());
-        if(tokenStatus.isRefresh()){
+        log.debug("setCookies " + tokenStatus.toString());
+        if (tokenStatus.isCreate() || tokenStatus.isUpdate()) {
             Cookie tokenCookie = new Cookie("token", tokenStatus.getToken());
             tokenCookie.setHttpOnly(true);
             tokenCookie.setPath("/");
@@ -185,37 +177,38 @@ public class JwtServiceImpl implements JwtService {
         res.addCookie(cookie);
     }
 
-
+    /**
+     * It is verified whether the token is available or not.
+     * however,even if the token is expired, it should retrieve a refresh-token.
+     * if the refresh-token is also expired, it should return an error.
+     * @param tokenId
+     * @param token
+     * @return
+     */
     @Override
     public TokenStatus getClaims(int tokenId, String token) {
-        if (tokenId !=0 && token != null && !token.isEmpty()) {
+        if (tokenId != 0 && token != null && !token.isEmpty()) {
             try {
                 Key signKey = getSignKey();
                 Claims claims = Jwts.parserBuilder().setSigningKey(signKey).build().parseClaimsJws(token).getBody();
-                return new TokenStatus(tokenId, Integer.parseInt(claims.get("id").toString()), false, token, claims);
+                return new TokenStatus(tokenId, Integer.parseInt(claims.get("id").toString()), false, false, token, claims);
             } catch (ExpiredJwtException e) {
-                log.error("Expired JWT token: reissue");
-                // 주 토큰 만료 시 리프레시 토큰 검증 및 새 토큰 발급
+                // if token is expired, it should find refresh token.
+                log.error("Expired JWT org-token: reissue");
                 TokenEntity tokenEntity = tokenRepository.findByTokenIdAndToken(tokenId, token);
                 if (tokenEntity != null) {
                     String refresh_token = tokenEntity.getRefreshToken();
                     try {
-                        // 키 가져와서 재생성
                         Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(refresh_token);
                         Claims refresh_claims = claimsJws.getBody();
 
                         int id = (Integer) refresh_claims.get("id");
                         TokenStatus tokenStatus = generateToken(tokenEntity, "id", id);
-                        log.debug("--------------------------------------->"+tokenStatus.toString());
                         return tokenStatus;
-
-
-                       // return new TokenStatus(tokenStatus.getTokenId(), true, tokenStatus.getToken(), Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(tokenStatus.getToken()).getBody());
                     } catch (JwtException jwt_e) {
-                        // 리프레시 토큰 관련 예외 처리
-                        // 다쓴 토큰 지우기
-//                        tokenRepository.deleteByTokenIdAndToken(tokenId, token);
-                        log.error("Error validating refresh token", jwt_e);
+                        // even if refresh-token is expired, it should return an error.
+                        log.error("Expired JWT refresh-token", jwt_e);
+                        tokenRepository.deleteByTokenIdAndToken(tokenId, token);
                     }
                 }
             } catch (Exception e) {
@@ -225,7 +218,10 @@ public class JwtServiceImpl implements JwtService {
         return null;
     }
 
-    // 서명 키 생성 메소드
+    /**
+     * Create a signature key
+     * @return
+     */
     private Key getSignKey() {
         byte[] secretByteKey = DatatypeConverter.parseBase64Binary(secretKey);
         return new SecretKeySpec(secretByteKey, SignatureAlgorithm.HS256.getJcaName());

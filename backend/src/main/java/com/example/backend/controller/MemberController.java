@@ -41,7 +41,6 @@ public class MemberController {
         if (member != null) {
             int id = member.getId();
             TokenStatus tokenStatus = jwService.generateToken(null, "id", id);
-            tokenStatus.setRefresh(true); // create new need to cookie
             jwService.setCookies(tokenStatus, res);
             return new ResponseEntity<>(id, HttpStatus.OK);
         }

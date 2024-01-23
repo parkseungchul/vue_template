@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 public class TokenStatus {
     private int tokenId;
     private int memberId;
-    private boolean isRefresh = false;
+    private boolean isCreate = false;
+    private boolean isUpdate = false;
     private String token;
     private Claims claims;
 
