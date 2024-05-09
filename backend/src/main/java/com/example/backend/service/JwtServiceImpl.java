@@ -123,10 +123,12 @@ public class JwtServiceImpl implements JwtService {
      * @param token
      * @return
      */
-    @Override
+
+    /**
     public boolean isValid(int tokenId, String token) {
         return this.getClaims(tokenId, token) != null;
     }
+    **/
 
     /**
      * It retrieves the Member-ID from the token.
@@ -134,7 +136,7 @@ public class JwtServiceImpl implements JwtService {
      * @param token
      * @return
      */
-    @Override
+     /**
     public int getMemberId(int tokenId, String token) {
         TokenStatus tokenStatus = this.getClaims(tokenId, token);
         if (tokenStatus != null) {
@@ -142,6 +144,7 @@ public class JwtServiceImpl implements JwtService {
         }
         return -1;
     }
+      **/
 
     /**
      * If it is a new or a refresh token, it should update the cookies.
@@ -177,6 +180,8 @@ public class JwtServiceImpl implements JwtService {
         res.addCookie(cookie);
     }
 
+    int i = 0;
+
     /**
      * It is verified whether the token is available or not.
      * however,even if the token is expired, it should retrieve a refresh-token.
@@ -194,7 +199,7 @@ public class JwtServiceImpl implements JwtService {
                 return new TokenStatus(tokenId, Integer.parseInt(claims.get("id").toString()), false, false, token, claims);
             } catch (ExpiredJwtException e) {
                 // if token is expired, it should find refresh token.
-                log.error("Expired JWT org-token: reissue");
+                log.error("Expired JWT org-token: reissue1: "+ i++);
                 TokenEntity tokenEntity = tokenRepository.findByTokenIdAndToken(tokenId, token);
                 if (tokenEntity != null) {
                     String refresh_token = tokenEntity.getRefreshToken();
@@ -204,6 +209,7 @@ public class JwtServiceImpl implements JwtService {
 
                         int id = (Integer) refresh_claims.get("id");
                         TokenStatus tokenStatus = generateToken(tokenEntity, "id", id);
+                        log.error("Expired JWT org-token: reissue2: "+ tokenStatus.toString());
                         return tokenStatus;
                     } catch (JwtException jwt_e) {
                         // even if refresh-token is expired, it should return an error.

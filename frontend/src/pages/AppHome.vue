@@ -20,7 +20,8 @@
 import axios from "axios";
 import {reactive} from "vue";
 import AppCard from "@/components/AppCard.vue";
-
+import '@/scripts/axiosInterceptors'
+import router from "@/scripts/router";
 export default {
   name: 'AppHome', components: {
     AppCard
@@ -32,7 +33,10 @@ export default {
     axios.get("/api/items").then((res) => {
       console.log(res);
       state.items = res.data;
-    }); // 홈은 에러 없어
+    }).catch(error => {
+      console.error('AppHome():', error);
+      router.push('/error');
+    });
     return {state}
   }
 }

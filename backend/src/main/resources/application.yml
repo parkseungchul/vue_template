@@ -9,13 +9,13 @@ spring:
     show-sql: true
 custom:
   token:
-    life-cycle: PT1H #  PT1D=1day PT1H=1hour PT1M=1Minute PT1S=1second
-    refresh-life-cycle: PT2H
+    life-cycle: PT1M #  PT1D=1day PT1H=1hour PT1M=1Minute PT1S=1second
+    refresh-life-cycle: PT3M
 
 logging:
   level:
     root: error
     com.example.backend: debug
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} |%M| [%thread] %-5level %logger{36} - %msg%n"   # performance issue
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSSSSS} |%M| [%thread] %-5level %logger{36} - %msg%n"   # performance issue
 #   console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

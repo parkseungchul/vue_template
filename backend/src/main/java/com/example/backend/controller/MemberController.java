@@ -5,7 +5,6 @@ import com.example.backend.dto.Member;
 import com.example.backend.dto.TokenStatus;
 import com.example.backend.service.JwtService;
 import com.example.backend.service.MemberService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +24,12 @@ public class MemberController {
     public MemberController(JwtService jwService, MemberService memberService) {
         this.jwService = jwService;
         this.memberService = memberService;
+    }
+
+    @PostMapping("api/health")
+    public ResponseEntity health(){
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     /**

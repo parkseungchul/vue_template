@@ -36,14 +36,14 @@ export default {
         password: ""
       }
     })
-    const submit = ()=>{
-      axios.post("/api/member/login", state.form).then((res)=>{
-        store.commit("setAccount", res.data);
-        console.log(res.data);
-        sessionStorage.setItem("id", res.data);
-        router.push({path:"/"});
-        window.alert("Login success");
-      }).catch(()=>{
+    const submit = () => {
+      axios.post("/api/member/login", state.form).then((res) => {
+        const userId = res.data; // 사용자 정보를 응답으로 받음
+        store.commit("setUser", {isAuthenticated: true, userId});
+        sessionStorage.setItem('isAuthenticated', 'true');
+        sessionStorage.setItem('userInfo', userId);
+        router.push({path: "/"});
+      }).catch(() => {
         window.alert("Login fail")
       })
     }

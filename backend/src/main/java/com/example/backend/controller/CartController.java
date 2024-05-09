@@ -24,6 +24,7 @@ public class CartController {
     // use 'final' for dependencies ensure they immutable and enhance the safety and reliability of the object.
     private final JwtService jwtService;
     private final CartService cartService;
+
     public CartController(JwtService jwtService, CartService cartService) {
         this.jwtService = jwtService;
         this.cartService = cartService;
@@ -32,6 +33,7 @@ public class CartController {
     /**
      * it returns items that user choose ( GetMapping )
      * it requires authority because it retrieves items in the cart. ( throwOnUnauthorized = true )
+     *
      * @param req
      * @param res
      * @return
@@ -42,7 +44,7 @@ public class CartController {
             HttpServletRequest req,
             HttpServletResponse res) {
         log.debug("getCartItems");
-        TokenStatus tokenStatus = (TokenStatus)req.getAttribute("tokenStatus");
+        TokenStatus tokenStatus = (TokenStatus) req.getAttribute("tokenStatus");
         int memberId = tokenStatus.getMemberId();
         List<Item> itemList = cartService.listItem(memberId);
         return new ResponseEntity<List<Item>>(itemList, HttpStatus.OK);
@@ -51,6 +53,7 @@ public class CartController {
     /**
      * Add item to user's cart. if it is already existed, if shouldn't save in DB.
      * It requires authority because it adds the item to the cart.
+     *
      * @param itemId
      * @param req
      * @param res
@@ -63,8 +66,10 @@ public class CartController {
             HttpServletRequest req,
             HttpServletResponse res) {
         log.debug("putCartItem");
-        TokenStatus tokenStatus = (TokenStatus)req.getAttribute("tokenStatus");
+        TokenStatus tokenStatus = (TokenStatus) req.getAttribute("tokenStatus");
         int memberId = tokenStatus.getMemberId();
+
+
         Cart cart = cartService.getCart(memberId, itemId);
         if (cart == null) {
             Cart newCart = new Cart();
@@ -72,12 +77,14 @@ public class CartController {
             newCart.setItemId(itemId);
             cartService.saveCart(newCart);
         }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
      * Delete item from the cart.
      * it requires authority because it deletes the item from the cart.
+     *
      * @param itemId
      * @param req
      * @param res
@@ -90,9 +97,9 @@ public class CartController {
             HttpServletRequest req,
             HttpServletResponse res) {
 
-        TokenStatus tokenStatus = (TokenStatus)req.getAttribute("tokenStatus");
+        TokenStatus tokenStatus = (TokenStatus) req.getAttribute("tokenStatus");
         int memberId = tokenStatus.getMemberId();
-        log.debug("deleteCartItem memberId: "+memberId+" itemId:"  +itemId + " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        log.debug("deleteCartItem memberId: " + memberId + " itemId:" + itemId + " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         cartService.delCart(memberId, itemId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

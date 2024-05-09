@@ -1,19 +1,24 @@
+// Create a new store instance.
 import {createStore} from 'vuex'
 
-// Create a new store instance.
 const store = createStore({
     state() {
         return {
-            account: {
-                id: 0
-            }
-        }
+            isAuthenticated: false,
+            userId: 0 // 기본값으로 0 또는 null을 설정
+        };
     },
     mutations: {
-        setAccount(state, payload) {
-            state.account.id = payload;
+        // 로그인 상태 설정
+        setUser(state, { isAuthenticated, userId }) {
+            state.isAuthenticated = isAuthenticated;
+            state.userId = userId;
+        },
+        // 로그인 상태 초기화
+        clearUser(state) {
+            state.isAuthenticated = false;
+            state.userId = 0; // 기본값으로 0 또는 null을 설정
         }
-
     }
-})
+});
 export default store;

@@ -2,32 +2,24 @@
   <div class="text-center">
     <div class="container">
       <ul>
-
-
-        <li v-for="item in state.items" :key="item.id" class="row"> <!-- 'item.id'로 변경 -->
+        <li class="row" v-for="item in state.items" :key="item.id" >
           <img :src="item.imgPath" class="img"/>
           <span class="name"> {{ item.name }}</span>
           <span class="price"> {{ lib.getNumberFormatted(item.price) }}원 </span>
           <span @click.stop="delToCart(item.id)">
             <i class="fa fa-trash" aria-hidden="true"></i>
           </span>
-
-
         </li>
-
-
       </ul>
     </div>
-
   </div>
 </template>
 <script>
-
-import {reactive, onMounted} from "vue";
+import {reactive} from "vue";
 import axios from "axios";
 import router from "@/scripts/router";
-import eventBus from "@/scripts/eventBus";
 import lib from "@/scripts/lib";
+import eventBus from "@/scripts/eventBus";
 
 export default {
   computed: {
@@ -44,7 +36,7 @@ export default {
       axios.get("api/cart/items").then(({ data }) => {
         state.items = data;
       }).catch(error => {
-        console.error('Error loading cart items:', error);
+        console.error('AppCart(loadItem):', error);
         router.push('/login');
       });
     };
@@ -52,21 +44,33 @@ export default {
     const delToCart = (itemId) => {
       axios.delete(`api/cart/items/${itemId}`)
           .then(() => {
-            loadCartItems();
+            loadCartItems(); // 아이템 삭제 후 목록 새로 고침
           })
           .catch(error => {
-            console.error('Error deleting cart item:', error);
+            console.error('AppCart(delToCart): ', error);
+            router.push('/login');
           });
     };
 
-    onMounted(loadCartItems);
-    eventBus.on('item-added', loadCartItems);
-
-    return { state, delToCart }; // 'delToCart' 함수 추가
+    if (eventBus) {
+      console.log('eventBus');
+      eventBus.on('item-added', (itemId) => {
+        console.log('eventBus-on');
+        console.log(`Item added with id: ${itemId}`);
+        loadCartItems(); // Call loadCartItems when the event occurs
+      });
+      const existingListeners = eventBus._events && eventBus._events['item-added'];
+      if (!existingListeners || existingListeners.length === 0) {
+        console.log('eventBus-off');
+        loadCartItems(); // Load only if there are no event handlers
+      }
+    }else{
+      // not work here
+      console.log('if eventbus does\'nt have a existence');
+    }
+    return { state, delToCart };
   }
 }
-
-
 </script>
 <style scoped>
 /* 리스트 아이템 스타일 */

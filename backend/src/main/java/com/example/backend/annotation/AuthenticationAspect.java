@@ -5,6 +5,7 @@ import com.example.backend.service.JwtService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -22,6 +23,7 @@ import java.io.IOException;
  * The annotation option is the 'throwOnUnauthorized' method.
  * It is defined in the Authentication interface.
  */
+@Slf4j
 @Aspect
 @Component
 public class AuthenticationAspect {
@@ -65,13 +67,16 @@ public class AuthenticationAspect {
         TokenStatus tokenStatus = null;
         if (tokenId == null || token == null) {
             handleUnauthorized(authenticatedEndpoint, response);
+            log.debug("token or tokenId is null");
         }else{ // Get the latest token through "getClaim" method.
             tokenStatus = jwtService.getClaims(tokenId, token);
             // it the refresh token is also expired, it should return 'null'
             if (tokenStatus == null) {
+                log.debug("tokenStatus is null");
                 handleUnauthorized(authenticatedEndpoint, response);
             // If it is correct, it should return 'TokenStatus'
             }else{
+                log.debug("tokenStatus is ok");
                 jwtService.setCookies(tokenStatus, response);
                 request.setAttribute("tokenStatus", tokenStatus);
             }
